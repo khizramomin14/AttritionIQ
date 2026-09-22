@@ -335,7 +335,7 @@ AttritionIQ/
 │   ├── preprocessor.pkl                          # Saved preprocessor
 │   └── model_metadata.json                       # Metrics, feature names, top features
 ├── notebooks/
-│   └── eda_and_model_training.ipynb              # EDA & training notebook
+│   └── Khizra_AttritionIQ.ipynb                  # EDA, modelling & analysis notebook (submission)
 ├── src/
 │   ├── data_preprocessing.py                     # Load, clean, split, pipeline
 │   ├── train_model.py                            # Train & compare models
@@ -370,17 +370,19 @@ AttritionIQ/
 
 | Package | Version | Purpose |
 |---|---|---|
-| flask | 3.0.0 | Web framework |
-| pandas | 2.1.4 | Data manipulation |
-| numpy | 1.26.2 | Numerical computing |
-| scikit-learn | 1.3.2 | ML pipeline |
-| matplotlib | 3.8.2 | Plotting |
-| plotly | 5.18.0 | Interactive charts |
-| joblib | 1.3.2 | Model serialisation |
-| imbalanced-learn | 0.11.0 | Class imbalance utilities |
-| shap | 0.44.0 | SHAP explainability |
+| flask | 3.1.2 | Web framework |
+| pandas | 2.3.3 | Data manipulation |
+| numpy | 2.4.0 | Numerical computing |
+| scikit-learn | 1.8.0 | ML pipeline |
+| matplotlib | 3.10.8 | Plotting |
+| plotly | 6.9.0 | Interactive charts |
+| joblib | 1.5.3 | Model serialisation |
+| imbalanced-learn | 0.14.2 | Class imbalance utilities |
+| Werkzeug | 3.1.4 | Flask dependency |
 | reportlab | 4.1.0 | PDF report generation |
-| Werkzeug | 3.0.1 | Flask dependency |
+| shap | 0.52.0 | SHAP explainability (optional — falls back gracefully) |
+| notebook | 7.6.3 | Jupyter notebook runtime |
+| ipykernel | 7.3.0 | Jupyter kernel for Python |
 
 ---
 
