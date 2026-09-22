@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Predict Attrition – AttritionIQ</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-brand">
+    <span class="brand-icon">⬡</span>
+    <span class="brand-name">AttritionIQ</span>
+  </div>
+  <ul class="nav-links">
+    <li><a href="{{ url_for('index') }}">Home</a></li>
+    <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+    <li><a href="{{ url_for('prediction_page') }}" class="active">Predict</a></li>
+    <li><a href="{{ url_for('insights') }}">Insights</a></li>
+    <li><a href="{{ url_for('fairness_page') }}">Fairness</a></li>
+    <li><a href="{{ url_for('data_quality_page') }}">Data Quality</a></li>
+    <li><a href="{{ url_for('about') }}">About</a></li>
+  </ul>
+  <button class="nav-toggle" onclick="toggleNav()">☰</button>
+</nav>
+
+<main class="page-main">
+  <div class="container">
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Employee Attrition Prediction</h1>
+        <p class="page-desc">Enter employee information to generate an AI-assisted attrition prediction and retention recommendations.</p>
+      </div>
+    </div>
+
+    <div class="pred-layout">
+
+      <!-- ── Input Form ── -->
+      <div class="pred-form-section">
+        <div class="card">
+          <div class="card-header">Employee Information</div>
+          <div class="card-body">
+            <form id="predForm">
+
+              <div class="form-section-title">Personal &amp; Organisational</div>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label>Age</label>
+                  <input type="number" name="Age" min="18" max="65" value="35" required />
+                </div>
+                <div class="form-group">
+                  <label>Department</label>
+                  <select name="Department">
+                    {% for d in options.departments %}
+                    <option value="{{ d }}">{{ d }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Job Role</label>
+                  <select name="JobRole">
+                    {% for r in options.job_roles %}
+                    <option value="{{ r }}">{{ r }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Job Level <span class="hint">(1–5)</span></label>
+                  <select name="JobLevel">
+                    <option value="1">1 – Entry</option>
+                    <option value="2" selected>2 – Junior</option>
+                    <option value="3">3 – Mid</option>
+                    <option value="4">4 – Senior</option>
+                    <option value="5">5 – Executive</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Business Travel</label>
+                  <select name="BusinessTravel">
+                    {% for t in options.business_travel %}
+                    <option value="{{ t }}">{{ t }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Overtime</label>
+                  <select name="OverTime">
+                    <option value="No">No</option>
+                    <option value="Yes">Yes</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Education <span class="hint">(1–5)</span></label>
+                  <select name="Education">
+                    <option value="1">1 – Below College</option>
+                    <option value="2">2 – College</option>
+                    <option value="3" selected>3 – Bachelor</option>
+                    <option value="4">4 – Master</option>
+                    <option value="5">5 – Doctor</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Education Field</label>
+                  <select name="EducationField">
+                    {% for f in options.education_fields %}
+                    <option value="{{ f }}">{{ f }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-section-title">Compensation &amp; Performance</div>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label>Monthly Income ($)</label>
+                  <input type="number" name="MonthlyIncome" min="1000" max="30000" value="5000" required />
+                </div>
+                <div class="form-group">
+                  <label>Percent Salary Hike (%)</label>
+                  <input type="number" name="PercentSalaryHike" min="0" max="100" value="15" />
+                </div>
+                <div class="form-group">
+                  <label>Stock Option Level <span class="hint">(0–3)</span></label>
+                  <select name="StockOptionLevel">
+                    <option value="0">0 – None</option>
+                    <option value="1" selected>1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Performance Rating <span class="hint">(1–4)</span></label>
+                  <select name="PerformanceRating">
+                    <option value="1">1 – Low</option>
+                    <option value="2">2 – Good</option>
+                    <option value="3" selected>3 – Excellent</option>
+                    <option value="4">4 – Outstanding</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-section-title">Satisfaction &amp; Engagement</div>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label>Job Satisfaction <span class="hint">(1–4)</span></label>
+                  <select name="JobSatisfaction">
+                    <option value="1">1 – Low</option>
+                    <option value="2">2 – Medium</option>
+                    <option value="3" selected>3 – High</option>
+                    <option value="4">4 – Very High</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Work-Life Balance <span class="hint">(1–4)</span></label>
+                  <select name="WorkLifeBalance">
+                    <option value="1">1 – Bad</option>
+                    <option value="2">2 – Good</option>
+                    <option value="3" selected>3 – Better</option>
+                    <option value="4">4 – Best</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Environment Satisfaction <span class="hint">(1–4)</span></label>
+                  <select name="EnvironmentSatisfaction">
+                    <option value="1">1 – Low</option>
+                    <option value="2">2 – Medium</option>
+                    <option value="3" selected>3 – High</option>
+                    <option value="4">4 – Very High</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Relationship Satisfaction <span class="hint">(1–4)</span></label>
+                  <select name="RelationshipSatisfaction">
+                    <option value="1">1 – Low</option>
+                    <option value="2">2 – Medium</option>
+                    <option value="3" selected>3 – High</option>
+                    <option value="4">4 – Very High</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Job Involvement <span class="hint">(1–4)</span></label>
+                  <select name="JobInvolvement">
+                    <option value="1">1 – Low</option>
+                    <option value="2">2 – Medium</option>
+                    <option value="3" selected>3 – High</option>
+                    <option value="4">4 – Very High</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-section-title">Career History</div>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label>Total Working Years</label>
+                  <input type="number" name="TotalWorkingYears" min="0" max="40" value="10" />
+                </div>
+                <div class="form-group">
+                  <label>Years at Company</label>
+                  <input type="number" name="YearsAtCompany" min="0" max="40" value="5" />
+                </div>
+                <div class="form-group">
+                  <label>Years in Current Role</label>
+                  <input type="number" name="YearsInCurrentRole" min="0" max="20" value="3" />
+                </div>
+                <div class="form-group">
+                  <label>Years Since Last Promotion</label>
+                  <input type="number" name="YearsSinceLastPromotion" min="0" max="20" value="1" />
+                </div>
+                <div class="form-group">
+                  <label>Years With Current Manager</label>
+                  <input type="number" name="YearsWithCurrManager" min="0" max="20" value="3" />
+                </div>
+                <div class="form-group">
+                  <label>Num Companies Worked</label>
+                  <input type="number" name="NumCompaniesWorked" min="0" max="20" value="2" />
+                </div>
+                <div class="form-group">
+                  <label>Training Times (Last Year)</label>
+                  <input type="number" name="TrainingTimesLastYear" min="0" max="10" value="3" />
+                </div>
+                <div class="form-group">
+                  <label>Distance From Home (km)</label>
+                  <input type="number" name="DistanceFromHome" min="1" max="100" value="10" />
+                </div>
+              </div>
+
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary btn-lg" id="predictBtn">
+                  Predict Attrition
+                </button>
+                <button type="button" class="btn btn-outline" onclick="resetForm()">Reset</button>
+              </div>
+
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Result Panel ── -->
+      <div class="pred-result-section" id="resultSection" style="display:none;">
+
+        <!-- Prediction result card -->
+        <div class="result-card" id="resultCard">
+          <div class="result-header">
+            <div class="result-title">Prediction Result</div>
+            <div class="result-badge" id="resultBadge"></div>
+          </div>
+          <div class="result-body">
+            <div class="result-main">
+              <div class="result-prediction" id="resultPrediction"></div>
+              <div class="result-prob-bar">
+                <div class="prob-label">Attrition Probability</div>
+                <div class="prob-track">
+                  <div class="prob-fill" id="probFill"></div>
+                </div>
+                <div class="prob-value" id="probValue"></div>
+              </div>
+            </div>
+
+            <!-- ── Why this prediction? (XAI) ── -->
+            <div class="result-section" id="xaiSection" style="display:none;">
+              <div class="result-section-title">Why This Prediction?</div>
+              <div class="result-disclaimer" id="xaiDisclaimer"></div>
+              <div style="margin-bottom:.5rem;">
+                <span class="badge badge-danger" style="margin-right:.3rem;">↑ Risk-Increasing</span>
+                <span class="badge badge-success">↓ Protective</span>
+              </div>
+              <ul class="factor-list" id="riskFactorList" style="margin-bottom:.5rem;"></ul>
+              <ul class="factor-list factor-list-protective" id="protectiveFactorList"></ul>
+              <div class="result-section-title" style="margin-top:.75rem;">All Top Factors</div>
+              <ul class="factor-list" id="factorList"></ul>
+            </div>
+
+            <!-- ── Recommendations ── -->
+            <div class="result-section">
+              <div class="result-section-title">HR Retention Recommendations</div>
+              <div class="result-disclaimer">
+                These are decision-support suggestions only. HR professionals should review before taking action.
+              </div>
+              <ul class="rec-list" id="recList"></ul>
+            </div>
+
+            <!-- ── Actions ── -->
+            <div class="result-section" style="display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border);">
+              <button class="btn btn-outline btn-sm" onclick="showScenarioPanel()">
+                🔀 What-If Scenario
+              </button>
+              <button class="btn btn-outline btn-sm" onclick="showThresholdPanel()">
+                📊 Threshold Analysis
+              </button>
+              <button class="btn btn-outline btn-sm" id="downloadReportBtn" onclick="downloadReport()">
+                ⬇ Download Report
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Risk thresholds note -->
+        <div class="risk-note card" style="margin-top:1rem; padding:1rem;">
+          <strong>Risk Thresholds</strong> (configurable, not official IBM thresholds):
+          <span class="badge badge-success">Low Risk: &lt;30%</span>
+          <span class="badge badge-warning">Medium Risk: 30–60%</span>
+          <span class="badge badge-danger">High Risk: ≥60%</span>
+        </div>
+
+        <!-- ── What-If Scenario Analysis ── -->
+        <div class="card" id="scenarioPanel" style="display:none;margin-top:1rem;">
+          <div class="card-header">🔀 What-If Scenario Analysis</div>
+          <div class="card-body">
+            <div class="result-disclaimer" style="margin-bottom:1rem;">
+              <strong>Model Simulation Only.</strong> This shows how the model responds to
+              hypothetical changes in employee attributes. It is NOT a causal prediction and
+              does not claim that changing these factors will prevent an employee from leaving.
+            </div>
+            <div class="form-grid" id="scenarioForm">
+              <!-- Dynamically generated from scenario_features -->
+              {% for key, cfg in scenario_features.items() %}
+              <div class="form-group">
+                <label>{{ cfg.label }}</label>
+                {% if cfg.type == "categorical" %}
+                <select id="sc_{{ key }}" name="{{ key }}">
+                  {% for opt in cfg.options %}
+                  <option value="{{ opt }}">{{ opt }}</option>
+                  {% endfor %}
+                </select>
+                {% else %}
+                <input type="number" id="sc_{{ key }}" name="{{ key }}"
+                       min="{{ cfg.min }}" max="{{ cfg.max }}" step="{{ cfg.step }}" value="{{ cfg.min }}" />
+                {% endif %}
+              </div>
+              {% endfor %}
+            </div>
+            <div style="margin-top:1rem;display:flex;gap:.75rem;flex-wrap:wrap;">
+              <button class="btn btn-primary btn-sm" onclick="runScenario()">Run Scenario</button>
+              <button class="btn btn-outline btn-sm" onclick="prefillScenarioDefaults()">Reset to Current Values</button>
+            </div>
+            <div id="scenarioResult" style="margin-top:1rem;display:none;">
+              <div class="charts-grid" style="grid-template-columns:1fr 1fr;gap:.75rem;margin:0;">
+                <div class="kpi-card">
+                  <div class="kpi-value" id="scCurrProb" style="font-size:1.4rem;">–</div>
+                  <div class="kpi-label">Current Probability</div>
+                </div>
+                <div class="kpi-card">
+                  <div class="kpi-value" id="scScenProb" style="font-size:1.4rem;">–</div>
+                  <div class="kpi-label">Scenario Probability</div>
+                </div>
+                <div class="kpi-card" id="scDiffCard">
+                  <div class="kpi-value" id="scDiff" style="font-size:1.4rem;">–</div>
+                  <div class="kpi-label">Change (pp)</div>
+                </div>
+                <div class="kpi-card">
+                  <div class="kpi-value" id="scScenRisk" style="font-size:1.4rem;">–</div>
+                  <div class="kpi-label">Scenario Risk</div>
+                </div>
+              </div>
+              <div class="result-disclaimer" style="margin-top:.75rem;" id="scDisclaimer"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Threshold Analysis ── -->
+        <div class="card" id="thresholdPanel" style="display:none;margin-top:1rem;">
+          <div class="card-header">📊 Prediction Threshold Analysis</div>
+          <div class="card-body">
+            <div class="result-disclaimer" style="margin-bottom:1rem;">
+              The dataset is class-imbalanced (~16% attrition). Lowering the threshold increases
+              recall (fewer missed at-risk cases) but reduces precision (more false positives).
+              The default threshold of 0.50 is used unless explicitly changed here.
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="runThresholdAnalysis()" id="thresholdBtn">
+              Compute Threshold Analysis
+            </button>
+            <div id="thresholdResult" style="margin-top:1rem;display:none;">
+              <div class="api-table-wrapper">
+                <table class="data-table" id="thresholdTable">
+                  <thead>
+                    <tr>
+                      <th>Threshold</th>
+                      <th>Precision</th>
+                      <th>Recall</th>
+                      <th>F1</th>
+                      <th>N High-Risk (Test)</th>
+                      <th>This Employee</th>
+                    </tr>
+                  </thead>
+                  <tbody id="thresholdTableBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /resultSection -->
+
+    </div><!-- /pred-layout -->
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <p>AttritionIQ · IBM SkillsBuild Data Analytics with AI · Educational purposes only.</p>
+  </div>
+</footer>
+
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+<script>
+// Store last prediction result and employee data
+let _lastResult = null;
+let _lastEmployeeData = null;
+let _lastScenarioResult = null;
+
+document.getElementById("predForm").addEventListener("submit", function(e) {
+  e.preventDefault();
+  submitPrediction();
+});
+
+// ─── Override renderResult to also handle XAI and save state ───────────────
+
+function submitPrediction() {
+  const form    = document.getElementById("predForm");
+  const btn     = document.getElementById("predictBtn");
+  const section = document.getElementById("resultSection");
+
+  if (!form.checkValidity()) { form.reportValidity(); return; }
+
+  btn.disabled = true;
+  btn.textContent = "Predicting…";
+
+  const fd = new FormData(form);
+  const payload = {};
+  fd.forEach((v, k) => { payload[k] = v; });
+  _lastEmployeeData = payload;
+
+  fetch("/api/predict", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  })
+    .then(r => r.json())
+    .then(data => {
+      if (data.error) { showError(data.error); return; }
+      _lastResult = data;
+      _lastScenarioResult = null;
+      renderResult(data);
+      renderXAI(data);
+      prefillScenarioDefaults();
+      // Hide scenario/threshold results
+      document.getElementById("scenarioPanel").style.display = "none";
+      document.getElementById("thresholdPanel").style.display = "none";
+      document.getElementById("scenarioResult").style.display = "none";
+      document.getElementById("thresholdResult").style.display = "none";
+      section.style.display = "block";
+      section.scrollIntoView({ behavior: "smooth", block: "start" });
+    })
+    .catch(err => showError("Network error: " + err.message))
+    .finally(() => {
+      btn.disabled = false;
+      btn.textContent = "Predict Attrition";
+    });
+}
+
+function renderXAI(data) {
+  const xaiSection = document.getElementById("xaiSection");
+  const explanation = data.explanation;
+  if (!explanation || !explanation.factors || explanation.factors.length === 0) {
+    xaiSection.style.display = "none";
+    return;
+  }
+  xaiSection.style.display = "block";
+  document.getElementById("xaiDisclaimer").textContent = explanation.disclaimer;
+
+  // Risk-increasing factors
+  const rfl = document.getElementById("riskFactorList");
+  rfl.innerHTML = "";
+  (explanation.risk_factors || []).forEach(f => {
+    const li = document.createElement("li");
+    li.style.cssText = "background:#fee2e2;color:#b91c1c;";
+    li.textContent = "↑ " + f.feature;
+    rfl.appendChild(li);
+  });
+
+  // Protective factors
+  const pfl = document.getElementById("protectiveFactorList");
+  pfl.innerHTML = "";
+  (explanation.protective_factors || []).forEach(f => {
+    const li = document.createElement("li");
+    li.style.cssText = "background:#dcfce7;color:#15803d;";
+    li.textContent = "↓ " + f.feature;
+    pfl.appendChild(li);
+  });
+
+  // All factors (legacy)
+  const fl = document.getElementById("factorList");
+  fl.innerHTML = "";
+  (data.top_factors || []).forEach(f => {
+    const li = document.createElement("li");
+    li.textContent = f;
+    fl.appendChild(li);
+  });
+}
+
+function resetForm() {
+  document.getElementById("predForm").reset();
+  document.getElementById("resultSection").style.display = "none";
+  _lastResult = null;
+  _lastEmployeeData = null;
+  _lastScenarioResult = null;
+}
+
+// ─── Scenario Analysis ──────────────────────────────────────────────────────
+
+function showScenarioPanel() {
+  const panel = document.getElementById("scenarioPanel");
+  panel.style.display = panel.style.display === "none" ? "block" : "none";
+}
+
+function prefillScenarioDefaults() {
+  if (!_lastEmployeeData) return;
+  const featureKeys = ["OverTime","JobSatisfaction","WorkLifeBalance","JobInvolvement",
+    "YearsAtCompany","YearsSinceLastPromotion","EnvironmentSatisfaction",
+    "RelationshipSatisfaction","TrainingTimesLastYear","StockOptionLevel"];
+  featureKeys.forEach(k => {
+    const el = document.getElementById("sc_" + k);
+    if (el && _lastEmployeeData[k] !== undefined) {
+      el.value = _lastEmployeeData[k];
+    }
+  });
+}
+
+function runScenario() {
+  if (!_lastEmployeeData) { alert("Run a prediction first."); return; }
+
+  const featureKeys = ["OverTime","JobSatisfaction","WorkLifeBalance","JobInvolvement",
+    "YearsAtCompany","YearsSinceLastPromotion","EnvironmentSatisfaction",
+    "RelationshipSatisfaction","TrainingTimesLastYear","StockOptionLevel"];
+
+  const overrides = {};
+  featureKeys.forEach(k => {
+    const el = document.getElementById("sc_" + k);
+    if (el) overrides[k] = el.value;
+  });
+
+  fetch("/api/scenario", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ employee: _lastEmployeeData, overrides }),
+  })
+    .then(r => r.json())
+    .then(data => {
+      if (data.error) { alert("Scenario error: " + data.error); return; }
+      _lastScenarioResult = data;
+      const currP = Math.round(data.current_probability * 100);
+      const scenP = Math.round(data.scenario_probability * 100);
+      const diff = data.difference_pp;
+
+      document.getElementById("scCurrProb").textContent = currP + "%";
+      document.getElementById("scScenProb").textContent = scenP + "%";
+      document.getElementById("scDiff").textContent = (diff > 0 ? "+" : "") + diff + " pp";
+      document.getElementById("scDiffCard").className =
+        "kpi-card " + (diff < 0 ? "kpi-success" : diff > 0 ? "kpi-danger" : "");
+      document.getElementById("scScenRisk").textContent = data.scenario_risk;
+      document.getElementById("scDisclaimer").textContent = data.disclaimer;
+      document.getElementById("scenarioResult").style.display = "block";
+    })
+    .catch(err => alert("Network error: " + err.message));
+}
+
+// ─── Threshold Analysis ─────────────────────────────────────────────────────
+
+function showThresholdPanel() {
+  const panel = document.getElementById("thresholdPanel");
+  panel.style.display = panel.style.display === "none" ? "block" : "none";
+}
+
+function runThresholdAnalysis() {
+  const btn = document.getElementById("thresholdBtn");
+  btn.disabled = true;
+  btn.textContent = "Computing…";
+
+  fetch("/api/threshold-analysis", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ employee: _lastEmployeeData }),
+  })
+    .then(r => r.json())
+    .then(data => {
+      if (data.error) { alert("Error: " + data.error); return; }
+      const tbody = document.getElementById("thresholdTableBody");
+      tbody.innerHTML = "";
+      const empProb = _lastResult ? _lastResult.probability : null;
+      data.thresholds.forEach(row => {
+        const tr = document.createElement("tr");
+        if (row.is_default) tr.style.background = "#eff6ff";
+        const empPred = empProb !== null
+          ? (empProb >= row.threshold ? "Attrition" : "No Attrition")
+          : "–";
+        tr.innerHTML = `
+          <td>${row.threshold.toFixed(2)}${row.is_default ? " <span class='badge badge-info'>default</span>" : ""}</td>
+          <td>${row.precision}%</td>
+          <td>${row.recall}%</td>
+          <td>${row.f1}%</td>
+          <td>${row.n_high_risk}</td>
+          <td>${empPred}</td>`;
+        tbody.appendChild(tr);
+      });
+      document.getElementById("thresholdResult").style.display = "block";
+    })
+    .catch(err => alert("Network error: " + err.message))
+    .finally(() => {
+      btn.disabled = false;
+      btn.textContent = "Compute Threshold Analysis";
+    });
+}
+
+// ─── Download Report ────────────────────────────────────────────────────────
+
+function downloadReport() {
+  if (!_lastResult) { alert("Run a prediction first."); return; }
+  const btn = document.getElementById("downloadReportBtn");
+  btn.disabled = true;
+  btn.textContent = "Generating…";
+
+  fetch("/api/download-report", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      prediction_result: _lastResult,
+      employee_data: _lastEmployeeData,
+      scenario_result: _lastScenarioResult,
+    }),
+  })
+    .then(r => {
+      if (!r.ok) return r.json().then(d => { throw new Error(d.error || r.statusText); });
+      const disp = r.headers.get("Content-Disposition") || "";
+      const fname = disp.includes("filename=")
+        ? disp.split("filename=")[1].replace(/"/g, "").trim()
+        : "attritioniq_report.html";
+      return r.blob().then(blob => ({ blob, fname }));
+    })
+    .then(({ blob, fname }) => {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = fname;
+      a.click();
+      URL.revokeObjectURL(url);
+    })
+    .catch(err => alert("Report error: " + err.message))
+    .finally(() => {
+      btn.disabled = false;
+      btn.textContent = "⬇ Download Report";
+    });
+}
+</script>
+</body>
+</html>

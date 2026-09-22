@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About – AttritionIQ</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-brand">
+    <span class="brand-icon">⬡</span>
+    <span class="brand-name">AttritionIQ</span>
+  </div>
+  <ul class="nav-links">
+    <li><a href="{{ url_for('index') }}">Home</a></li>
+    <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+    <li><a href="{{ url_for('prediction_page') }}">Predict</a></li>
+    <li><a href="{{ url_for('insights') }}">Insights</a></li>
+    <li><a href="{{ url_for('fairness_page') }}">Fairness</a></li>
+    <li><a href="{{ url_for('data_quality_page') }}">Data Quality</a></li>
+    <li><a href="{{ url_for('about') }}" class="active">About</a></li>
+  </ul>
+  <button class="nav-toggle" onclick="toggleNav()">☰</button>
+</nav>
+
+<main class="page-main">
+  <div class="container" style="max-width:860px;">
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">About AttritionIQ</h1>
+        <p class="page-desc">IBM SkillsBuild · Data Analytics with AI Internship Project</p>
+      </div>
+    </div>
+
+    <div class="about-section">
+      <h2>Project Overview</h2>
+      <p>
+        AttritionIQ is an AI-powered HR analytics application built as part of the
+        <strong>IBM SkillsBuild Data Analytics with AI</strong> virtual internship programme.
+        It analyses employee attrition patterns, predicts flight-risk using machine learning,
+        and generates practical HR retention recommendations — all from the publicly available
+        IBM HR Analytics Employee Attrition &amp; Performance dataset.
+      </p>
+    </div>
+
+    <div class="about-section">
+      <h2>Dataset</h2>
+      <p>
+        The project uses the <strong>IBM HR Analytics Employee Attrition &amp; Performance</strong>
+        dataset, a fictional dataset created by IBM data scientists. It contains approximately
+        1,470 employee records with 35 attributes covering demographics, job information,
+        satisfaction levels and compensation.
+      </p>
+      <ul>
+        <li>Source: IBM (fictional dataset)</li>
+        <li>Rows: ~1,470 employees</li>
+        <li>Columns: 35 features</li>
+        <li>Target: Attrition (Yes / No)</li>
+      </ul>
+    </div>
+
+    <div class="about-section">
+      <h2>Machine Learning Pipeline</h2>
+      <ul>
+        <li><strong>Preprocessing:</strong> StandardScaler (numeric), OneHotEncoder (categorical), ColumnTransformer pipeline.</li>
+        <li><strong>Class imbalance:</strong> Handled using <code>class_weight="balanced"</code> across all models.</li>
+        <li><strong>Models evaluated:</strong> Logistic Regression, Decision Tree, Random Forest, Gradient Boosting.</li>
+        <li><strong>Model selection:</strong> Based on combined F1-score + Recall + ROC-AUC (equal weighting).</li>
+        <li><strong>Explainability:</strong> Feature importance from tree-based models, weighted by input deviation.</li>
+      </ul>
+    </div>
+
+    <div class="about-section">
+      <h2>API Endpoints</h2>
+      <div class="api-table-wrapper">
+        <table class="data-table">
+          <thead>
+            <tr><th>Method</th><th>Endpoint</th><th>Description</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>GET</td><td>/</td><td>Home page</td></tr>
+            <tr><td>GET</td><td>/dashboard</td><td>HR Analytics Dashboard</td></tr>
+            <tr><td>GET</td><td>/prediction</td><td>Prediction form page</td></tr>
+            <tr><td>GET</td><td>/insights</td><td>Insights &amp; model performance</td></tr>
+            <tr><td>GET</td><td>/about</td><td>About page</td></tr>
+            <tr><td>POST</td><td>/api/predict</td><td>JSON prediction endpoint</td></tr>
+            <tr><td>GET</td><td>/api/metrics</td><td>Model metrics &amp; comparison</td></tr>
+            <tr><td>GET</td><td>/api/feature-importance</td><td>Feature importance list</td></tr>
+            <tr><td>GET</td><td>/api/dashboard-data</td><td>Filtered dashboard data</td></tr>
+            <tr><td>GET</td><td>/api/filter-options</td><td>Dropdown filter values</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="about-section">
+      <h2>Technology Stack</h2>
+      <div class="tech-grid">
+        <div class="tech-pill">Python 3.10+</div>
+        <div class="tech-pill">Flask 3.0</div>
+        <div class="tech-pill">Pandas</div>
+        <div class="tech-pill">NumPy</div>
+        <div class="tech-pill">Scikit-learn</div>
+        <div class="tech-pill">Plotly.js</div>
+        <div class="tech-pill">Matplotlib</div>
+        <div class="tech-pill">Joblib</div>
+        <div class="tech-pill">HTML5 / CSS3 / JS</div>
+      </div>
+    </div>
+
+    <div class="about-section about-ethics">
+      <h2>⚖️ Ethical AI Statement</h2>
+      <p>
+        This project is built for <strong>educational and demonstration purposes only</strong>.
+      </p>
+      <ul>
+        <li>The IBM HR dataset is <strong>entirely fictional</strong> and does not represent real employees.</li>
+        <li>Predictions are <strong>decision-support tools only</strong> and must not be used to terminate, penalise, or automatically reject real employees.</li>
+        <li>The model does <strong>not use protected attributes</strong> (e.g., Gender, MaritalStatus) as the basis for recommendations.</li>
+        <li>Model predictions represent <strong>statistical patterns</strong>, not causal relationships.</li>
+        <li>HR professionals should <strong>review all predictions</strong> before taking any action.</li>
+        <li>Employee privacy must be protected in any real deployment.</li>
+        <li>Risk thresholds (Low/Medium/High) are configurable and are <strong>not official IBM HR thresholds</strong>.</li>
+        <li>This project <strong>demonstrates analytics and ML techniques</strong> — it is not an actual IBM HR decision system.</li>
+      </ul>
+    </div>
+
+    <div class="about-section">
+      <h2>Project Structure</h2>
+      <pre class="code-block">AttritionIQ/
+├── data/           # IBM HR Attrition dataset CSV
+├── model/          # Saved model, preprocessor, metadata
+├── notebooks/      # EDA & model training notebook
+├── src/            # Python modules (preprocessing, training, prediction)
+├── templates/      # Flask HTML templates
+├── static/         # CSS and JavaScript
+├── tests/          # Automated tests
+├── app.py          # Flask application
+└── requirements.txt</pre>
+    </div>
+
+    <div class="about-section">
+      <h2>Limitations &amp; Future Improvements</h2>
+      <ul>
+        <li>Dataset is fictional — predictions should not be applied to real HR contexts without domain validation.</li>
+        <li>Model was trained on a single snapshot; no time-series or longitudinal analysis.</li>
+        <li>Full SHAP explainability (Shapley values) could replace the current lightweight approximation.</li>
+        <li>Hyperparameter tuning (GridSearchCV / Optuna) could further improve model performance.</li>
+        <li>A real deployment would require authentication, audit logging and data governance controls.</li>
+        <li>Integration with live HRIS systems would enable real-time monitoring.</li>
+      </ul>
+    </div>
+
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <p>AttritionIQ · IBM SkillsBuild Data Analytics with AI · Educational purposes only.</p>
+  </div>
+</footer>
+
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

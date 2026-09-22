@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard – AttritionIQ</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+  <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-brand">
+    <span class="brand-icon">⬡</span>
+    <span class="brand-name">AttritionIQ</span>
+  </div>
+  <ul class="nav-links">
+    <li><a href="{{ url_for('index') }}">Home</a></li>
+    <li><a href="{{ url_for('dashboard') }}" class="active">Dashboard</a></li>
+    <li><a href="{{ url_for('prediction_page') }}">Predict</a></li>
+    <li><a href="{{ url_for('insights') }}">Insights</a></li>
+    <li><a href="{{ url_for('fairness_page') }}">Fairness</a></li>
+    <li><a href="{{ url_for('data_quality_page') }}">Data Quality</a></li>
+    <li><a href="{{ url_for('about') }}">About</a></li>
+  </ul>
+  <button class="nav-toggle" onclick="toggleNav()">☰</button>
+</nav>
+
+<main class="page-main">
+  <div class="container">
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">HR Analytics Dashboard</h1>
+        <p class="page-desc">Explore attrition patterns across the IBM HR dataset.</p>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filter-bar" id="filterBar">
+      <div class="filter-item">
+        <label>Department</label>
+        <select id="f-dept" onchange="applyFilters()">
+          <option value="All">All Departments</option>
+        </select>
+      </div>
+      <div class="filter-item">
+        <label>Job Role</label>
+        <select id="f-role" onchange="applyFilters()">
+          <option value="All">All Roles</option>
+        </select>
+      </div>
+      <div class="filter-item">
+        <label>Gender</label>
+        <select id="f-gender" onchange="applyFilters()">
+          <option value="All">All</option>
+        </select>
+      </div>
+      <div class="filter-item">
+        <label>Business Travel</label>
+        <select id="f-travel" onchange="applyFilters()">
+          <option value="All">All</option>
+        </select>
+      </div>
+      <div class="filter-item">
+        <label>Overtime</label>
+        <select id="f-ot" onchange="applyFilters()">
+          <option value="All">All</option>
+        </select>
+      </div>
+      <div class="filter-item">
+        <label>Job Level</label>
+        <select id="f-level" onchange="applyFilters()">
+          <option value="All">All</option>
+        </select>
+      </div>
+      <button class="btn btn-sm btn-outline" onclick="resetFilters()">Reset</button>
+    </div>
+
+    <!-- KPI Row -->
+    <div class="kpi-grid" id="kpiRow">
+      <div class="kpi-card"><div class="kpi-value" id="k-total">–</div><div class="kpi-label">Total Employees</div></div>
+      <div class="kpi-card kpi-danger"><div class="kpi-value" id="k-left">–</div><div class="kpi-label">Employees Left</div></div>
+      <div class="kpi-card kpi-success"><div class="kpi-value" id="k-retained">–</div><div class="kpi-label">Retained</div></div>
+      <div class="kpi-card kpi-warning"><div class="kpi-value" id="k-rate">–</div><div class="kpi-label">Attrition Rate</div></div>
+      <div class="kpi-card"><div class="kpi-value" id="k-income">–</div><div class="kpi-label">Avg Monthly Income</div></div>
+      <div class="kpi-card"><div class="kpi-value" id="k-tenure">–</div><div class="kpi-label">Avg Years at Company</div></div>
+    </div>
+
+    <!-- Charts grid -->
+    <div class="charts-grid">
+      <div class="chart-card chart-wide">
+        <div class="chart-title">Attrition by Department</div>
+        <div id="chart-dept" class="chart-container"></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Attrition by Overtime</div>
+        <div id="chart-ot" class="chart-container"></div>
+      </div>
+      <div class="chart-card chart-wide">
+        <div class="chart-title">Attrition by Job Role</div>
+        <div id="chart-role" class="chart-container"></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Attrition by Job Satisfaction</div>
+        <div id="chart-js" class="chart-container"></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Attrition by Age Group</div>
+        <div id="chart-age" class="chart-container"></div>
+      </div>
+      <div class="chart-card chart-wide">
+        <div class="chart-title">Attrition by Years at Company</div>
+        <div id="chart-tenure" class="chart-container"></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Attrition by Business Travel</div>
+        <div id="chart-travel" class="chart-container"></div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <p>AttritionIQ · IBM SkillsBuild Data Analytics with AI · Educational purposes only.</p>
+  </div>
+</footer>
+
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+<script>
+  // Pass server-side filter options to JS
+  const INITIAL_STATS = {{ stats | tojson }};
+  initDashboard(INITIAL_STATS);
+</script>
+</body>
+</html>

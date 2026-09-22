@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AttritionIQ – IBM Employee Attrition Analytics</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+<body>
+
+<!-- ── Navigation ── -->
+<nav class="navbar">
+  <div class="nav-brand">
+    <span class="brand-icon">⬡</span>
+    <span class="brand-name">AttritionIQ</span>
+  </div>
+  <ul class="nav-links">
+    <li><a href="{{ url_for('index') }}" class="active">Home</a></li>
+    <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+    <li><a href="{{ url_for('prediction_page') }}">Predict</a></li>
+    <li><a href="{{ url_for('insights') }}">Insights</a></li>
+    <li><a href="{{ url_for('fairness_page') }}">Fairness</a></li>
+    <li><a href="{{ url_for('data_quality_page') }}">Data Quality</a></li>
+    <li><a href="{{ url_for('about') }}">About</a></li>
+  </ul>
+  <button class="nav-toggle" onclick="toggleNav()">☰</button>
+</nav>
+
+<!-- ── Hero ── -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-badge">IBM SkillsBuild · Data Analytics with AI</div>
+    <h1 class="hero-title">AttritionIQ</h1>
+    <p class="hero-subtitle">IBM Employee Attrition Analytics &amp; AI Prediction</p>
+    <p class="hero-description">
+      An AI-powered HR analytics platform that helps organisations understand
+      employee attrition patterns, predict flight-risk, and generate data-driven
+      retention recommendations — built on the IBM HR Analytics dataset.
+    </p>
+    <div class="hero-actions">
+      <a href="{{ url_for('dashboard') }}" class="btn btn-primary">View Dashboard</a>
+      <a href="{{ url_for('prediction_page') }}" class="btn btn-outline">Predict Attrition</a>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="stat-ring">
+      <svg viewBox="0 0 200 200" width="220" height="220">
+        <circle cx="100" cy="100" r="80" fill="none" stroke="#e5e7eb" stroke-width="16"/>
+        <circle cx="100" cy="100" r="80" fill="none" stroke="#3b82d4" stroke-width="16"
+                stroke-dasharray="80 422" stroke-dashoffset="-314" stroke-linecap="round"/>
+        <text x="100" y="94" text-anchor="middle" fill="#1f2328" font-size="28" font-weight="700">{{ "%.1f"|format(kpi.attrition_rate) }}%</text>
+        <text x="100" y="116" text-anchor="middle" fill="#57606a" font-size="12">Attrition Rate</text>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- ── KPI Cards ── -->
+<section class="section kpi-section">
+  <div class="container">
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-value">{{ kpi.total_employees | int }}</div>
+        <div class="kpi-label">Total Employees</div>
+      </div>
+      <div class="kpi-card kpi-danger">
+        <div class="kpi-value">{{ kpi.employees_left | int }}</div>
+        <div class="kpi-label">Employees Who Left</div>
+      </div>
+      <div class="kpi-card kpi-success">
+        <div class="kpi-value">{{ kpi.employees_retained | int }}</div>
+        <div class="kpi-label">Employees Retained</div>
+      </div>
+      <div class="kpi-card kpi-warning">
+        <div class="kpi-value">{{ "%.1f"|format(kpi.attrition_rate) }}%</div>
+        <div class="kpi-label">Attrition Rate</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-value">${{ "{:,.0f}".format(kpi.avg_monthly_income) }}</div>
+        <div class="kpi-label">Avg Monthly Income</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-value">{{ kpi.avg_years_at_company }}</div>
+        <div class="kpi-label">Avg Years at Company</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Feature Cards ── -->
+<section class="section features-section">
+  <div class="container">
+    <h2 class="section-title">Platform Capabilities</h2>
+    <p class="section-subtitle">
+      Everything an HR analytics team needs — from exploration to prediction.
+    </p>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <h3>Interactive Dashboard</h3>
+        <p>Explore attrition patterns across departments, roles, tenure, overtime and more with filterable charts.</p>
+        <a href="{{ url_for('dashboard') }}" class="feature-link">Open Dashboard →</a>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🤖</div>
+        <h3>AI Prediction</h3>
+        <p>Enter employee attributes and receive an instant attrition prediction with probability and risk level.</p>
+        <a href="{{ url_for('prediction_page') }}" class="feature-link">Make Prediction →</a>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">💡</div>
+        <h3>Business Insights</h3>
+        <p>Automatically generated, data-backed insights from the IBM HR dataset with calculated statistics.</p>
+        <a href="{{ url_for('insights') }}" class="feature-link">View Insights →</a>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🎯</div>
+        <h3>Retention Recommendations</h3>
+        <p>Receive practical HR retention suggestions tailored to the specific employee characteristics and risk factors.</p>
+        <a href="{{ url_for('prediction_page') }}" class="feature-link">Try It →</a>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📈</div>
+        <h3>Model Evaluation</h3>
+        <p>Compare four ML models — Logistic Regression, Decision Tree, Random Forest, Gradient Boosting.</p>
+        <a href="{{ url_for('insights') }}" class="feature-link">See Metrics →</a>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔍</div>
+        <h3>Feature Importance</h3>
+        <p>Understand which employee attributes are most associated with attrition predictions from the model.</p>
+        <a href="{{ url_for('insights') }}" class="feature-link">Explore →</a>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⚖️</div>
+        <h3>Fairness Audit</h3>
+        <p>Diagnostic evaluation of model performance across demographic groups including Gender and Department.</p>
+        <a href="{{ url_for('fairness_page') }}" class="feature-link">View Fairness →</a>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔬</div>
+        <h3>Data Quality Monitor</h3>
+        <p>Automated data quality checks — missing values, class imbalance, constant columns and outlier detection.</p>
+        <a href="{{ url_for('data_quality_page') }}" class="feature-link">Check Quality →</a>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📋</div>
+        <h3>Executive HR Summary</h3>
+        <p>High-level overview for HR leadership with historical attrition rates and model-predicted risk distribution.</p>
+        <a href="{{ url_for('executive_page') }}" class="feature-link">View Summary →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Footer ── -->
+<footer class="footer">
+  <div class="container">
+    <p>AttritionIQ · IBM SkillsBuild Data Analytics with AI Project · For educational and demonstration purposes only.</p>
+    <p class="footer-note">Predictions are decision-support tools and do not represent official IBM HR decisions.</p>
+  </div>
+</footer>
+
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

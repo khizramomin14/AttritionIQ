@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Insights – AttritionIQ</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+  <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-brand">
+    <span class="brand-icon">⬡</span>
+    <span class="brand-name">AttritionIQ</span>
+  </div>
+  <ul class="nav-links">
+    <li><a href="{{ url_for('index') }}">Home</a></li>
+    <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+    <li><a href="{{ url_for('prediction_page') }}">Predict</a></li>
+    <li><a href="{{ url_for('insights') }}" class="active">Insights</a></li>
+    <li><a href="{{ url_for('fairness_page') }}">Fairness</a></li>
+    <li><a href="{{ url_for('data_quality_page') }}">Data Quality</a></li>
+    <li><a href="{{ url_for('about') }}">About</a></li>
+  </ul>
+  <button class="nav-toggle" onclick="toggleNav()">☰</button>
+</nav>
+
+<main class="page-main">
+  <div class="container">
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Business Insights & Model Performance</h1>
+        <p class="page-desc">Data-backed insights computed from the IBM HR Analytics dataset, plus ML model evaluation.</p>
+      </div>
+    </div>
+
+    <!-- ── Data Insights ── -->
+    <h2 class="section-label">Dataset Insights</h2>
+    <div class="insights-grid">
+
+      {% set dept_sorted = stats.by_department | sort(attribute='attrition_rate', reverse=True) %}
+      {% set top_dept = dept_sorted[0] %}
+      <div class="insight-card">
+        <div class="insight-icon">🏢</div>
+        <div class="insight-body">
+          <div class="insight-stat">{{ top_dept.attrition_rate }}%</div>
+          <div class="insight-text">
+            <strong>{{ top_dept.Department }}</strong> has the highest observed attrition rate
+            among all departments in this dataset.
+          </div>
+        </div>
+      </div>
+
+      {% set ot_yes = stats.by_overtime | selectattr('OverTime', 'equalto', 'Yes') | list %}
+      {% set ot_no  = stats.by_overtime | selectattr('OverTime', 'equalto', 'No')  | list %}
+      {% if ot_yes and ot_no %}
+      <div class="insight-card">
+        <div class="insight-icon">⏰</div>
+        <div class="insight-body">
+          <div class="insight-stat">{{ ot_yes[0].attrition_rate }}% vs {{ ot_no[0].attrition_rate }}%</div>
+          <div class="insight-text">
+            Employees <strong>working overtime</strong> show a
+            <strong>{{ "%.1f"|format(ot_yes[0].attrition_rate - ot_no[0].attrition_rate) }}
+            percentage-point</strong> higher observed attrition rate than those who do not.
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+      {% set js_low  = stats.by_job_satisfaction | selectattr('JobSatisfaction', 'equalto', 1) | list %}
+      {% set js_high = stats.by_job_satisfaction | selectattr('JobSatisfaction', 'equalto', 4) | list %}
+      {% if js_low and js_high %}
+      <div class="insight-card">
+        <div class="insight-icon">😊</div>
+        <div class="insight-body">
+          <div class="insight-stat">{{ js_low[0].attrition_rate }}% vs {{ js_high[0].attrition_rate }}%</div>
+          <div class="insight-text">
+            Employees with <strong>low job satisfaction (1)</strong> show {{ js_low[0].attrition_rate }}%
+            observed attrition versus {{ js_high[0].attrition_rate }}% for those with
+            <strong>very high satisfaction (4)</strong>.
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+      {% set role_sorted = stats.by_job_role | sort(attribute='attrition_rate', reverse=True) %}
+      {% set top_role = role_sorted[0] %}
+      <div class="insight-card">
+        <div class="insight-icon">💼</div>
+        <div class="insight-body">
+          <div class="insight-stat">{{ top_role.attrition_rate }}%</div>
+          <div class="insight-text">
+            <strong>{{ top_role.JobRole }}</strong> has the highest observed attrition rate
+            among all job roles — {{ top_role.attrition_rate }}%.
+          </div>
+        </div>
+      </div>
+
+      {% set tenure_sorted = stats.by_tenure | sort(attribute='attrition_rate', reverse=True) %}
+      {% set top_tenure = tenure_sorted[0] %}
+      <div class="insight-card">
+        <div class="insight-icon">📅</div>
+        <div class="insight-body">
+          <div class="insight-stat">{{ top_tenure.attrition_rate }}%</div>
+          <div class="insight-text">
+            Employees in the <strong>{{ top_tenure.TenureBucket }}</strong> tenure bucket
+            show the highest observed attrition rate ({{ top_tenure.attrition_rate }}%),
+            suggesting early-career retention is a priority area.
+          </div>
+        </div>
+      </div>
+
+      {% set travel_sorted = stats.by_business_travel | sort(attribute='attrition_rate', reverse=True) %}
+      {% set top_travel = travel_sorted[0] %}
+      <div class="insight-card">
+        <div class="insight-icon">✈️</div>
+        <div class="insight-body">
+          <div class="insight-stat">{{ top_travel.attrition_rate }}%</div>
+          <div class="insight-text">
+            Among travel categories, <strong>{{ top_travel.BusinessTravel }}</strong>
+            employees show the highest attrition rate ({{ top_travel.attrition_rate }}%).
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /insights-grid -->
+
+    <div class="insight-disclaimer">
+      All statistics are computed directly from the IBM HR Analytics dataset (n={{ overview.shape.rows }}).
+      Observed attrition rates represent historical patterns in this fictional dataset
+      and do not imply causation.
+    </div>
+
+    <!-- ── Model Performance ── -->
+    <h2 class="section-label" style="margin-top:2.5rem;">Model Performance</h2>
+
+    <div class="card" style="overflow-x:auto;">
+      <div class="card-header">Model Comparison Table</div>
+      <div class="card-body" id="modelTableContainer">
+        <div class="loading-spinner">Loading model metrics…</div>
+      </div>
+    </div>
+
+    <div class="charts-grid" style="margin-top:1.5rem;">
+      <div class="chart-card">
+        <div class="chart-title">ROC Curve – Best Model</div>
+        <div id="chart-roc" class="chart-container"></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Confusion Matrix – Best Model</div>
+        <div id="chart-cm" class="chart-container"></div>
+      </div>
+      <div class="chart-card chart-wide">
+        <div class="chart-title">Top 15 Feature Importances</div>
+        <div id="chart-fi" class="chart-container" style="min-height:360px;"></div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <p>AttritionIQ · IBM SkillsBuild Data Analytics with AI · Educational purposes only.</p>
+  </div>
+</footer>
+
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+<script>
+  loadInsightsData();
+</script>
+</body>
+</html>

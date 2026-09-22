@@ -1,0 +1,247 @@
+{
+  "best_model": "Logistic Regression",
+  "combined_score": 0.7565,
+  "metrics": {
+    "Logistic Regression": {
+      "accuracy": 0.7755,
+      "precision": 0.4021,
+      "recall": 0.8298,
+      "f1": 0.5417,
+      "roc_auc": 0.898,
+      "confusion_matrix": [
+        [
+          189,
+          58
+        ],
+        [
+          8,
+          39
+        ]
+      ]
+    },
+    "Decision Tree": {
+      "accuracy": 0.7687,
+      "precision": 0.3562,
+      "recall": 0.5532,
+      "f1": 0.4333,
+      "roc_auc": 0.692,
+      "confusion_matrix": [
+        [
+          200,
+          47
+        ],
+        [
+          21,
+          26
+        ]
+      ]
+    },
+    "Random Forest": {
+      "accuracy": 0.8741,
+      "precision": 0.7083,
+      "recall": 0.3617,
+      "f1": 0.4789,
+      "roc_auc": 0.8922,
+      "confusion_matrix": [
+        [
+          240,
+          7
+        ],
+        [
+          30,
+          17
+        ]
+      ]
+    },
+    "Gradient Boosting": {
+      "accuracy": 0.8673,
+      "precision": 0.6176,
+      "recall": 0.4468,
+      "f1": 0.5185,
+      "roc_auc": 0.8701,
+      "confusion_matrix": [
+        [
+          234,
+          13
+        ],
+        [
+          26,
+          21
+        ]
+      ]
+    }
+  },
+  "top_features": [
+    {
+      "feature": "YearsAtCompany",
+      "importance": 1.48141
+    },
+    {
+      "feature": "JobSatisfaction",
+      "importance": 1.124997
+    },
+    {
+      "feature": "OverTime_No",
+      "importance": 0.922975
+    },
+    {
+      "feature": "OverTime_Yes",
+      "importance": 0.906295
+    },
+    {
+      "feature": "EnvironmentSatisfaction",
+      "importance": 0.877525
+    },
+    {
+      "feature": "EducationField_Marketing",
+      "importance": 0.816674
+    },
+    {
+      "feature": "StockOptionLevel",
+      "importance": 0.734939
+    },
+    {
+      "feature": "BusinessTravel_Travel_Rarely",
+      "importance": 0.727043
+    },
+    {
+      "feature": "EducationField_Human Resources",
+      "importance": 0.69709
+    },
+    {
+      "feature": "Department_Human Resources",
+      "importance": 0.624365
+    },
+    {
+      "feature": "BusinessTravel_Travel_Frequently",
+      "importance": 0.603148
+    },
+    {
+      "feature": "Department_Research & Development",
+      "importance": 0.591583
+    },
+    {
+      "feature": "JobRole_Healthcare Representative",
+      "importance": 0.552002
+    },
+    {
+      "feature": "WorkLifeBalance",
+      "importance": 0.427421
+    },
+    {
+      "feature": "JobRole_Sales Representative",
+      "importance": 0.387379
+    },
+    {
+      "feature": "NumCompaniesWorked",
+      "importance": 0.376144
+    },
+    {
+      "feature": "JobInvolvement",
+      "importance": 0.373394
+    },
+    {
+      "feature": "TotalWorkingYears",
+      "importance": 0.367252
+    },
+    {
+      "feature": "JobRole_Sales Executive",
+      "importance": 0.351941
+    },
+    {
+      "feature": "JobLevel",
+      "importance": 0.329651
+    }
+  ],
+  "num_cols": [
+    "Age",
+    "DailyRate",
+    "DistanceFromHome",
+    "Education",
+    "EnvironmentSatisfaction",
+    "HourlyRate",
+    "JobInvolvement",
+    "JobLevel",
+    "JobSatisfaction",
+    "MonthlyIncome",
+    "MonthlyRate",
+    "NumCompaniesWorked",
+    "PercentSalaryHike",
+    "PerformanceRating",
+    "RelationshipSatisfaction",
+    "StockOptionLevel",
+    "TotalWorkingYears",
+    "TrainingTimesLastYear",
+    "WorkLifeBalance",
+    "YearsAtCompany",
+    "YearsInCurrentRole",
+    "YearsSinceLastPromotion",
+    "YearsWithCurrManager"
+  ],
+  "cat_cols": [
+    "BusinessTravel",
+    "Department",
+    "EducationField",
+    "Gender",
+    "JobRole",
+    "MaritalStatus",
+    "OverTime"
+  ],
+  "feature_names": [
+    "Age",
+    "DailyRate",
+    "DistanceFromHome",
+    "Education",
+    "EnvironmentSatisfaction",
+    "HourlyRate",
+    "JobInvolvement",
+    "JobLevel",
+    "JobSatisfaction",
+    "MonthlyIncome",
+    "MonthlyRate",
+    "NumCompaniesWorked",
+    "PercentSalaryHike",
+    "PerformanceRating",
+    "RelationshipSatisfaction",
+    "StockOptionLevel",
+    "TotalWorkingYears",
+    "TrainingTimesLastYear",
+    "WorkLifeBalance",
+    "YearsAtCompany",
+    "YearsInCurrentRole",
+    "YearsSinceLastPromotion",
+    "YearsWithCurrManager",
+    "BusinessTravel_Non-Travel",
+    "BusinessTravel_Travel_Frequently",
+    "BusinessTravel_Travel_Rarely",
+    "Department_Human Resources",
+    "Department_Research & Development",
+    "Department_Sales",
+    "EducationField_Human Resources",
+    "EducationField_Life Sciences",
+    "EducationField_Marketing",
+    "EducationField_Medical",
+    "EducationField_Other",
+    "EducationField_Technical Degree",
+    "Gender_Female",
+    "Gender_Male",
+    "JobRole_Healthcare Representative",
+    "JobRole_Human Resources",
+    "JobRole_Laboratory Technician",
+    "JobRole_Manager",
+    "JobRole_Manufacturing Director",
+    "JobRole_Research Director",
+    "JobRole_Research Scientist",
+    "JobRole_Sales Executive",
+    "JobRole_Sales Representative",
+    "MaritalStatus_Divorced",
+    "MaritalStatus_Married",
+    "MaritalStatus_Single",
+    "OverTime_No",
+    "OverTime_Yes"
+  ],
+  "class_labels": {
+    "0": "No",
+    "1": "Yes"
+  }
+}

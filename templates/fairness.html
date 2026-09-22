@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fairness Audit – AttritionIQ</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+  <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-brand">
+    <span class="brand-icon">⬡</span>
+    <span class="brand-name">AttritionIQ</span>
+  </div>
+  <ul class="nav-links">
+    <li><a href="{{ url_for('index') }}">Home</a></li>
+    <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+    <li><a href="{{ url_for('prediction_page') }}">Predict</a></li>
+    <li><a href="{{ url_for('insights') }}">Insights</a></li>
+    <li><a href="{{ url_for('fairness_page') }}" class="active">Fairness</a></li>
+    <li><a href="{{ url_for('data_quality_page') }}">Data Quality</a></li>
+    <li><a href="{{ url_for('about') }}">About</a></li>
+  </ul>
+  <button class="nav-toggle" onclick="toggleNav()">☰</button>
+</nav>
+
+<main class="page-main">
+  <div class="container">
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Fairness &amp; Bias Audit</h1>
+        <p class="page-desc">Diagnostic evaluation of model performance across demographic groups.</p>
+      </div>
+    </div>
+
+    <!-- Disclaimer -->
+    <div class="fairness-disclaimer card" style="margin-bottom:1.5rem; padding:1.1rem 1.25rem; background:#fffbeb; border-color:#fde68a;">
+      <strong>⚖️ Important Disclaimer:</strong>
+      Fairness metrics are diagnostic indicators and do not by themselves establish discrimination.
+      This analysis uses demographic attributes for model evaluation only — they are
+      <strong>not</strong> used in HR recommendations or predictions in this application.
+      Any real-world deployment requires expert legal and ethical review.
+    </div>
+
+    <!-- Loading state -->
+    <div id="fairnessLoading" class="loading-spinner">Loading fairness metrics…</div>
+    <div id="fairnessContent" style="display:none;">
+
+      <!-- Group selector -->
+      <div class="filter-bar" style="margin-bottom:1.5rem;">
+        <div class="filter-item">
+          <label>Group Variable</label>
+          <select id="groupSelect" onchange="switchGroup()">
+            <option value="Gender">Gender</option>
+            <option value="Department">Department</option>
+            <option value="JobRole">Job Role</option>
+            <option value="MaritalStatus">Marital Status</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Overall metrics -->
+      <div class="card" style="margin-bottom:1.5rem;">
+        <div class="card-header">Overall Test-Set Performance</div>
+        <div class="card-body" id="overallMetrics"></div>
+      </div>
+
+      <!-- Group table -->
+      <div class="card" style="margin-bottom:1.5rem;">
+        <div class="card-header" id="groupTableTitle">Performance by Gender</div>
+        <div class="card-body">
+          <p style="font-size:.82rem;color:var(--muted);margin-bottom:1rem;">
+            Metrics computed on the held-out test set (20% of data, stratified split).
+            Demographic attributes are used here for diagnostic purposes only.
+          </p>
+          <div class="api-table-wrapper">
+            <table class="data-table" id="groupTable">
+              <thead>
+                <tr>
+                  <th>Group</th>
+                  <th>N (Test)</th>
+                  <th>Attrition Rate</th>
+                  <th>Precision</th>
+                  <th>Recall</th>
+                  <th>F1</th>
+                  <th>FPR</th>
+                  <th>FNR</th>
+                </tr>
+              </thead>
+              <tbody id="groupTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Charts -->
+      <div class="charts-grid" style="margin-bottom:1.5rem;">
+        <div class="chart-card">
+          <div class="chart-title" id="recallChartTitle">Recall by Group</div>
+          <div class="chart-container" id="chart-recall" style="min-height:240px;"></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title" id="fprChartTitle">False Positive Rate by Group</div>
+          <div class="chart-container" id="chart-fpr" style="min-height:240px;"></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title" id="f1ChartTitle">F1-Score by Group</div>
+          <div class="chart-container" id="chart-f1" style="min-height:240px;"></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">Attrition Rate by Group</div>
+          <div class="chart-container" id="chart-atr" style="min-height:240px;"></div>
+        </div>
+      </div>
+
+      <!-- Note -->
+      <div class="card" style="padding:1rem 1.25rem; background:var(--surface);">
+        <strong>Interpretation Guidance</strong>
+        <ul style="margin-top:.5rem; padding-left:1.25rem;">
+          <li style="font-size:.88rem;color:var(--muted);margin-bottom:.3rem;">
+            <strong>Recall</strong> differences indicate groups where the model may miss more true attrition cases.
+          </li>
+          <li style="font-size:.88rem;color:var(--muted);margin-bottom:.3rem;">
+            <strong>FPR</strong> differences indicate groups where the model may generate more false alarms.
+          </li>
+          <li style="font-size:.88rem;color:var(--muted);margin-bottom:.3rem;">
+            Differences in base rates (attrition rates) between groups naturally affect all other metrics.
+          </li>
+          <li style="font-size:.88rem;color:var(--muted);">
+            These findings should be reviewed by qualified HR analytics and legal professionals before any operational use.
+          </li>
+        </ul>
+      </div>
+
+    </div><!-- /fairnessContent -->
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <p>AttritionIQ · IBM SkillsBuild Data Analytics with AI · Educational purposes only.</p>
+  </div>
+</footer>
+
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+<script>
+let _fairnessData = null;
+
+function loadFairnessData() {
+  fetch("/api/fairness")
+    .then(r => r.json())
+    .then(data => {
+      if (data.error) {
+        document.getElementById("fairnessLoading").textContent = "Error: " + data.error;
+        return;
+      }
+      _fairnessData = data;
+      document.getElementById("fairnessLoading").style.display = "none";
+      document.getElementById("fairnessContent").style.display = "block";
+      renderOverall(data.overall);
+      switchGroup();
+    })
+    .catch(err => {
+      document.getElementById("fairnessLoading").textContent = "Failed to load: " + err.message;
+    });
+}
+
+function renderOverall(overall) {
+  if (!overall) return;
+  const el = document.getElementById("overallMetrics");
+  el.innerHTML = `
+    <div class="kpi-grid" style="grid-template-columns:repeat(auto-fill,minmax(140px,1fr));">
+      <div class="kpi-card"><div class="kpi-value">${overall.precision}%</div><div class="kpi-label">Precision</div></div>
+      <div class="kpi-card"><div class="kpi-value">${overall.recall}%</div><div class="kpi-label">Recall</div></div>
+      <div class="kpi-card"><div class="kpi-value">${overall.f1}%</div><div class="kpi-label">F1-Score</div></div>
+      <div class="kpi-card"><div class="kpi-value">${overall.fpr}%</div><div class="kpi-label">False Positive Rate</div></div>
+      <div class="kpi-card"><div class="kpi-value">${overall.fnr}%</div><div class="kpi-label">False Negative Rate</div></div>
+      <div class="kpi-card"><div class="kpi-value">${overall.attrition_rate}%</div><div class="kpi-label">Attrition Rate</div></div>
+    </div>`;
+}
+
+function switchGroup() {
+  if (!_fairnessData) return;
+  const group = document.getElementById("groupSelect").value;
+  const groups = _fairnessData.groups[group];
+  if (!groups) return;
+
+  document.getElementById("groupTableTitle").textContent = `Performance by ${group}`;
+  document.getElementById("recallChartTitle").textContent = `Recall by ${group}`;
+  document.getElementById("fprChartTitle").textContent = `False Positive Rate by ${group}`;
+  document.getElementById("f1ChartTitle").textContent = `F1-Score by ${group}`;
+
+  const tbody = document.getElementById("groupTableBody");
+  tbody.innerHTML = "";
+  const keys = Object.keys(groups);
+  const vals = keys.map(k => groups[k]);
+
+  keys.forEach((k, i) => {
+    const m = vals[i];
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td><strong>${k}</strong></td>
+      <td>${m.n_records}</td>
+      <td>${m.attrition_rate}%</td>
+      <td>${m.precision}%</td>
+      <td>${m.recall}%</td>
+      <td>${m.f1}%</td>
+      <td>${m.fpr}%</td>
+      <td>${m.fnr}%</td>`;
+    tbody.appendChild(tr);
+  });
+
+  const cfg = { responsive: true, displayModeBar: false };
+  const layout = {
+    margin: { t: 20, r: 20, b: 60, l: 50 },
+    paper_bgcolor: "transparent",
+    plot_bgcolor: "transparent",
+    font: { family: "-apple-system,'Segoe UI',system-ui,sans-serif", size: 12 },
+    yaxis: { title: "%" },
+  };
+
+  Plotly.newPlot("chart-recall",
+    [{ type: "bar", x: keys, y: vals.map(v => v.recall),
+       marker: { color: "#3b82d4" },
+       hovertemplate: "%{x}: %{y}%<extra></extra>" }],
+    { ...layout }, cfg);
+
+  Plotly.newPlot("chart-fpr",
+    [{ type: "bar", x: keys, y: vals.map(v => v.fpr),
+       marker: { color: "#dc2626" },
+       hovertemplate: "%{x}: %{y}%<extra></extra>" }],
+    { ...layout }, cfg);
+
+  Plotly.newPlot("chart-f1",
+    [{ type: "bar", x: keys, y: vals.map(v => v.f1),
+       marker: { color: "#7c5cd8" },
+       hovertemplate: "%{x}: %{y}%<extra></extra>" }],
+    { ...layout }, cfg);
+
+  Plotly.newPlot("chart-atr",
+    [{ type: "bar", x: keys, y: vals.map(v => v.attrition_rate),
+       marker: { color: "#d97706" },
+       hovertemplate: "%{x}: %{y}%<extra></extra>" }],
+    { ...layout }, cfg);
+}
+
+loadFairnessData();
+</script>
+</body>
+</html>
