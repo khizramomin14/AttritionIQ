@@ -64,3 +64,6 @@ temp/
 .mypy_cache/
 .dmypy.json
 dmypy.json
+
+# Microsoft Office lock files
+~$*
